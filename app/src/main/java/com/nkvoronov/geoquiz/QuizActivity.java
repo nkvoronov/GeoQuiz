@@ -16,6 +16,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
+    private TextView mProgressTextView;
     private TextView mQuestionTextView;
 
     private Question[] mQuestionBank = new Question[] {
@@ -27,15 +28,18 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
     private int mCurrentIndex = 0;
+    private int mCountTrueAnswer = 0;
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_COUNT = "index";
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putInt(KEY_COUNT, mCountTrueAnswer);
     }
 
     @Override
@@ -76,8 +80,10 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mCountTrueAnswer = savedInstanceState.getInt(KEY_COUNT, 0);
         }
 
+        mProgressTextView = findViewById(R.id.progress_text_view);
         mQuestionTextView = findViewById(R.id.question_text_view);
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
@@ -135,30 +141,12 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-        updatePrevButton();
-        updateNextButton();
+        mPrevButton.setEnabled(mCurrentIndex > 0);
+        mNextButton.setEnabled(mCurrentIndex < mQuestionBank.length -1);
         int question = mQuestionBank[mCurrentIndex].getTextResId();
+        mProgressTextView.setText(Integer.toString(mCurrentIndex + 1) + "/" + Integer.toString(mQuestionBank.length));
         mQuestionTextView.setText(question);
         updateAnswerButton(true);
-    }
-
-    private void updatePrevButton() {
-        if (mCurrentIndex < mQuestionBank.length) {
-            if (mCurrentIndex > 0) {
-                mPrevButton.setEnabled(true);
-            } else {
-                mPrevButton.setEnabled(false);
-            }
-        }
-
-    }
-
-    private void updateNextButton() {
-        if (mCurrentIndex < mQuestionBank.length -1) {
-            mNextButton.setEnabled(true);
-        } else {
-            mNextButton.setEnabled(false);
-        }
     }
 
     private void updateAnswerButton(boolean btStats) {
@@ -175,6 +163,7 @@ public class QuizActivity extends AppCompatActivity {
         updateAnswerButton(false);
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            mCountTrueAnswer++;
             toptoast = Gravity.BOTTOM;
             yoffsettoast = 0;
         } else {
