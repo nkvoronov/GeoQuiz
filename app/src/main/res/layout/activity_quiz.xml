@@ -31,14 +31,14 @@
 
             <Button
                 android:id="@+id/true_button"
-                style="@style/Widget.AppCompat.Button"
+                style="@android:style/Widget.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/true_button" />
 
             <Button
                 android:id="@+id/false_button"
-                style="@style/Widget.AppCompat.Button"
+                style="@android:style/Widget.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/false_button" />
@@ -52,19 +52,20 @@
 
             <ImageButton
                 android:id="@+id/prev_button"
-                style="@style/Widget.AppCompat.Button"
+                style="@android:style/Widget.ImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_left"
-                android:contentDescription="@string/prev_button" />
+                android:contentDescription="@string/prev_button"
+                app:srcCompat="@drawable/ic_arrow_left" />
 
             <ImageButton
                 android:id="@+id/next_button"
-                style="@style/Widget.AppCompat.Button"
+                style="@android:style/Widget.ImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_right"
-                android:contentDescription="@string/next_button" />
+                android:contentDescription="@string/next_button"
+                app:srcCompat="@drawable/ic_arrow_right" />
+
         </LinearLayout>
 
     </LinearLayout>
