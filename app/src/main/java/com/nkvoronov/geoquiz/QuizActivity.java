@@ -28,18 +28,15 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
     private int mCurrentIndex = 0;
-    private int mCountTrueAnswer = 0;
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
-    private static final String KEY_COUNT = "index";
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
-        savedInstanceState.putInt(KEY_COUNT, mCountTrueAnswer);
     }
 
     @Override
@@ -80,7 +77,6 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            mCountTrueAnswer = savedInstanceState.getInt(KEY_COUNT, 0);
         }
 
         mProgressTextView = findViewById(R.id.progress_text_view);
@@ -157,22 +153,21 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
-        int toptoast;
-        int yoffsettoast = 0;
+        int topToast;
+        int yOffsetToast = 0;
         Toast mToast;
         updateAnswerButton(false);
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
-            mCountTrueAnswer++;
-            toptoast = Gravity.BOTTOM;
-            yoffsettoast = 0;
+            topToast = Gravity.BOTTOM;
+            yOffsetToast = 0;
         } else {
             messageResId = R.string.incorrect_toast;
-            toptoast = Gravity.TOP;
-            yoffsettoast = 150;
+            topToast = Gravity.TOP;
+            yOffsetToast = 150;
         }
         mToast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT);
-        mToast.setGravity(toptoast, 0, yoffsettoast);
+        mToast.setGravity(topToast, 0, yOffsetToast);
         mToast.show();
     }
 }
