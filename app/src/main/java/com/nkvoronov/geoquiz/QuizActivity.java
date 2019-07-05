@@ -18,6 +18,7 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mPrevButton;
     private TextView mProgressTextView;
     private TextView mQuestionTextView;
+    private Button mResButton;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -32,7 +33,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
-    private static final String KEY_COUNT = "index";
+    private static final String KEY_COUNT = "count";
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -137,12 +138,23 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        mResButton = findViewById(R.id.res_button);
+        mResButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getResults();
+            }
+        });
+
+
         updateQuestion();
     }
 
     private void updateQuestion() {
-        mPrevButton.setEnabled(mCurrentIndex > 0);
+        mPrevButton.setEnabled(false);
+        //mPrevButton.setEnabled(mCurrentIndex > 0);
         mNextButton.setEnabled(mCurrentIndex < mQuestionBank.length -1);
+        mResButton.setEnabled(mCurrentIndex == mQuestionBank.length -1);
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mProgressTextView.setText(Integer.toString(mCurrentIndex + 1) + "/" + Integer.toString(mQuestionBank.length));
         mQuestionTextView.setText(question);
@@ -154,25 +166,34 @@ public class QuizActivity extends AppCompatActivity {
         mFalseButton.setEnabled(btStats);
     }
 
+    private void getResults() {
+        Toast mToast;
+        int res;
+        res = (int)((mCountTrueAnswer * 100)/mQuestionBank.length);
+        mToast = Toast.makeText(this, "Answers - " + Integer.toString(res) + "%", Toast.LENGTH_SHORT);
+        mToast.setGravity(Gravity.TOP, 0, 150);
+        mToast.show();
+    }
+
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        int messageResId = 0;
-        int toptoast;
-        int yoffsettoast = 0;
+        int messageResId;
+        int topToast;
+        int yOffsetToast;
         Toast mToast;
         updateAnswerButton(false);
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
             mCountTrueAnswer++;
-            toptoast = Gravity.BOTTOM;
-            yoffsettoast = 0;
+            topToast = Gravity.BOTTOM;
+            yOffsetToast = 0;
         } else {
             messageResId = R.string.incorrect_toast;
-            toptoast = Gravity.TOP;
-            yoffsettoast = 150;
+            topToast = Gravity.TOP;
+            yOffsetToast = 150;
         }
         mToast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT);
-        mToast.setGravity(toptoast, 0, yoffsettoast);
+        mToast.setGravity(topToast, 0, yOffsetToast);
         mToast.show();
     }
 }
