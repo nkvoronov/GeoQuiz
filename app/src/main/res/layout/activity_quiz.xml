@@ -48,23 +48,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/prev_button"
-                style="@android:style/Widget.ImageButton"
+            <Button
+                android:id="@+id/cheat_button"
+                style="@android:style/Widget.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/prev_button"
-                app:srcCompat="@drawable/ic_arrow_left" />
+                android:text="@string/cheat_button" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/next_button"
-                style="@android:style/Widget.ImageButton"
+                style="@android:style/Widget.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/next_button"
-                app:srcCompat="@drawable/ic_arrow_right" />
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:text="@string/next_button" />
 
         </LinearLayout>
 

@@ -2,6 +2,7 @@ package com.nkvoronov.geoquiz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,8 +15,8 @@ import android.widget.Toast;
 public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private Button mCheatButton;
+    private Button mNextButton;
     private TextView mProgressTextView;
     private TextView mQuestionTextView;
 
@@ -31,6 +32,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
@@ -111,14 +113,13 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mPrevButton = findViewById(R.id.prev_button);
-        mPrevButton.setOnClickListener(new View.OnClickListener() {
+        mCheatButton = findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCurrentIndex > 0) {
-                    mCurrentIndex--;
-                    updateQuestion();
-                }
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
 
@@ -137,7 +138,6 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-        mPrevButton.setEnabled(mCurrentIndex > 0);
         mNextButton.setEnabled(mCurrentIndex < mQuestionBank.length -1);
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mProgressTextView.setText(Integer.toString(mCurrentIndex + 1) + "/" + Integer.toString(mQuestionBank.length));
