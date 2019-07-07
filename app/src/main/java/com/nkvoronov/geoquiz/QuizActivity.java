@@ -1,5 +1,6 @@
 package com.nkvoronov.geoquiz;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -29,6 +30,7 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
     private int mCurrentIndex = 0;
+    private boolean mIsCheater;
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
@@ -129,6 +131,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (mCurrentIndex < mQuestionBank.length - 1) {
                     mCurrentIndex++;
+                    mIsCheater = false;
                     updateQuestion();
                 }
             }
@@ -157,17 +160,36 @@ public class QuizActivity extends AppCompatActivity {
         int yOffsetToast = 0;
         Toast mToast;
         updateAnswerButton(false);
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
+        if (mIsCheater) {
+            messageResId = R.string.judgment_toast;
             topToast = Gravity.BOTTOM;
             yOffsetToast = 0;
         } else {
-            messageResId = R.string.incorrect_toast;
-            topToast = Gravity.TOP;
-            yOffsetToast = 150;
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+                topToast = Gravity.BOTTOM;
+                yOffsetToast = 0;
+            } else {
+                messageResId = R.string.incorrect_toast;
+                topToast = Gravity.TOP;
+                yOffsetToast = 150;
+            }
         }
         mToast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT);
         mToast.setGravity(topToast, 0, yOffsetToast);
         mToast.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 }
