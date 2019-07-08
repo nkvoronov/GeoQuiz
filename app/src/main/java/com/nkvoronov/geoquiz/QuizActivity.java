@@ -20,6 +20,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button mNextButton;
     private TextView mProgressTextView;
     private TextView mQuestionTextView;
+    private Button mResultButton;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -30,10 +31,13 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true),
     };
     private int mCurrentIndex = 0;
+    private int mCountTrueAnswer = 0;
     private boolean mIsCheater;
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_COUNT = "count";
+    private static final String KEY_CHEATER = "cheater";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     @Override
@@ -41,6 +45,8 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putInt(KEY_COUNT, mCountTrueAnswer);
+        savedInstanceState.putBoolean(KEY_CHEATER, mIsCheater);
     }
 
     @Override
@@ -81,6 +87,8 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mCountTrueAnswer = savedInstanceState.getInt(KEY_COUNT, 0);
+            mIsCheater = savedInstanceState.getBoolean(KEY_CHEATER, false);
         }
 
         mProgressTextView = findViewById(R.id.progress_text_view);
@@ -137,13 +145,22 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        mResultButton = findViewById(R.id.result_button);
+        mResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getResults();
+            }
+        });
+
         updateQuestion();
     }
 
     private void updateQuestion() {
         mNextButton.setEnabled(mCurrentIndex < mQuestionBank.length -1);
+        mResultButton.setEnabled(mCurrentIndex == mQuestionBank.length -1);
         int question = mQuestionBank[mCurrentIndex].getTextResId();
-        mProgressTextView.setText(Integer.toString(mCurrentIndex + 1) + "/" + Integer.toString(mQuestionBank.length));
+        mProgressTextView.setText(String.format("%d / %d", mCurrentIndex + 1, mQuestionBank.length));
         mQuestionTextView.setText(question);
         updateAnswerButton(true);
     }
@@ -156,27 +173,20 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
-        int topToast;
-        int yOffsetToast = 0;
         Toast mToast;
         updateAnswerButton(false);
         if (mIsCheater) {
             messageResId = R.string.judgment_toast;
-            topToast = Gravity.BOTTOM;
-            yOffsetToast = 0;
         } else {
             if (userPressedTrue == answerIsTrue) {
+                mCountTrueAnswer++;
                 messageResId = R.string.correct_toast;
-                topToast = Gravity.BOTTOM;
-                yOffsetToast = 0;
             } else {
                 messageResId = R.string.incorrect_toast;
-                topToast = Gravity.TOP;
-                yOffsetToast = 150;
             }
         }
         mToast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT);
-        mToast.setGravity(topToast, 0, yOffsetToast);
+        mToast.setGravity(Gravity.BOTTOM, 0, 0);
         mToast.show();
     }
 
@@ -191,5 +201,14 @@ public class QuizActivity extends AppCompatActivity {
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
         }
+    }
+
+    private void getResults() {
+        Toast mToast;
+        int res;
+        res = (int)((mCountTrueAnswer * 100)/mQuestionBank.length);
+        mToast = Toast.makeText(this, getString(R.string.result_string, res), Toast.LENGTH_SHORT);
+        mToast.setGravity(Gravity.TOP, 0, 150);
+        mToast.show();
     }
 }
